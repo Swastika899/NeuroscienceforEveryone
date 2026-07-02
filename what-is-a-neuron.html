@@ -6,6 +6,251 @@
     <title>What is a Neuron? | N for E</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
+    <style>
+        /* NEURON DIAGRAM STYLES */
+        .neuron-container {
+            display: flex;
+            flex-direction: row;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            width: 100%;
+            overflow: hidden;
+            min-height: 500px;
+            margin: 30px 0;
+        }
+
+        .diagram-area {
+            flex: 1.5;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            position: relative;
+        }
+
+        .info-panel {
+            flex: 1;
+            padding: 40px;
+            border-left: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #fafbfc;
+        }
+
+        .diagram-svg {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.05));
+        }
+
+        /* Interactive Styling */
+        .neuron-part {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0.7;
+        }
+
+        .neuron-part:hover,
+        .neuron-part.active {
+            opacity: 1;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+        }
+
+        /* Part-specific styling */
+        .dendrite {
+            stroke: #3498db;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .dendrite:hover,
+        .dendrite.active {
+            stroke-width: 4;
+            stroke: #2980b9;
+        }
+
+        .soma {
+            fill: #e74c3c;
+            transition: all 0.3s ease;
+        }
+
+        .soma:hover,
+        .soma.active {
+            fill: #c0392b;
+        }
+
+        .nucleus {
+            fill: #c0392b;
+            transition: all 0.3s ease;
+        }
+
+        .nucleus:hover,
+        .nucleus.active {
+            fill: #a93226;
+        }
+
+        .axon {
+            stroke: #f39c12;
+            stroke-width: 4;
+            stroke-linecap: round;
+            fill: none;
+        }
+
+        .axon:hover,
+        .axon.active {
+            stroke-width: 5;
+            stroke: #e67e22;
+        }
+
+        .myelin {
+            fill: #f1c40f;
+            stroke: #f39c12;
+            stroke-width: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .myelin:hover,
+        .myelin.active {
+            fill: #f39c12;
+            stroke-width: 2;
+        }
+
+        .terminal {
+            stroke: #9b59b6;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .terminal-dot {
+            fill: #8e44ad;
+            transition: all 0.3s ease;
+        }
+
+        .terminal:hover,
+        .terminal.active {
+            stroke-width: 3.5;
+            stroke: #8e44ad;
+        }
+
+        .terminal:hover .terminal-dot,
+        .terminal.active .terminal-dot {
+            r: 5;
+            fill: #6c3483;
+        }
+
+        /* Labels */
+        .part-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-anchor: middle;
+            fill: #2c3e50;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .neuron-part:hover .part-label,
+        .neuron-part.active .part-label {
+            opacity: 1;
+        }
+
+        /* Info Panel */
+        .info-panel h2 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 24px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        #part-title {
+            color: #2980b9;
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        #part-description {
+            line-height: 1.8;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #95a5a6;
+            margin-top: 25px;
+            font-style: italic;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 15px;
+        }
+
+        /* Legend */
+        .legend {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .neuron-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .diagram-area {
+                padding: 30px;
+                min-height: 350px;
+            }
+            
+            .info-panel {
+                border-left: none;
+                border-top: 1px solid #eee;
+                padding: 30px;
+            }
+
+            .legend {
+                grid-template-columns: 1fr;
+            }
+
+            .info-panel h2 {
+                font-size: 20px;
+            }
+
+            #part-title {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -20,12 +265,10 @@
                 <a href="index.html">Home</a>
                 <a href="articles.html">Articles</a>
                 <a href="about.html">About</a>
-                 <script src="script.js"></script>
-<button class="theme-button" onclick="toggleTheme()">
-    Toggle Theme
-</button>
-
-<script src="script.js"></script>
+                <button class="theme-button" onclick="toggleTheme()">
+                    Toggle Theme
+                </button>
+            </div>
         </nav>
 
         <div class="page-title">
@@ -41,16 +284,16 @@
             </p>
 
             <p>
-                Like most cells, neurons contain a nucleus, mitochondria, and other structures needed for survival. However, neurons also possess specialized structures called dendrites and axons that allow them to receive and transmit information.
+                Like most cells, neurons contain a nucleus, mitochondria, and other structures needed for survival. However, neurons also possess specialized structures called dendrites and axons that allow them to transmit signals over long distances.
             </p>
 
             <p>
-                Neurons are electrically excitable, meaning they can generate and carry signals. They communicate with other cells through structures called synapses. Synapses can be electrical or chemical and allow information to pass from one cell to another.
+                Neurons are electrically excitable, meaning they can generate and carry signals. They communicate with other cells through structures called synapses. Synapses can be electrical or chemical.
             </p>
 
             <h2>WHY ARE THEY ESSENTIAL?</h2>
             <p>
-                Neurons are specialised cells that make us capable of activities, ranging from sleeping to parkour. Without them we would be unable to process any input from the world around us, and without any input, our brain would be unable to create output.
+                Neurons are specialised cells that make us capable of activities, ranging from sleeping to parkour. Without them we would be unable to process any input from the world around us, and would be incapable of thought, emotion, or movement.
             </p>
             
             <p>
@@ -58,264 +301,224 @@
             </p>
             
             <p>
-            One thing that makes our brain dynamical is that neurons not only take imput, but also interact with other neurons to form synapses. As they are synaptically plastic, we can partially (if not fully) alter which memories and skill remain active and dominant. This is a know phenomena stated in the Hebb's law, where the most used synapses are likely to preserved longer and the synapses not used at all can lose connectivity while still being present in our mind.
+            One thing that makes our brain dynamical is that neurons not only take input, but also interact with other neurons to form synapses. As they are synaptically plastic, we can partially update and rewire the neural circuits of our brains through learning and adaptation.
             </p>
             
             <h2>HOW EXACTLY DO NEURONS COMMUNICATE?</h2>
             <p>
                 Neurons are made up of three key components:-
-                I. Dendrites
-                These are branch-like structure that pick up signals from neighbouring cells.
-                II. Soma (Cell body)
-                The neuron's control center, that processes the signals and contains the nucleus.
-                III. Axon
-                A long, cable-like extension that carries the action potential away from the cell toward other cells.
+                <br><strong>I. Dendrites</strong>
+                <br>These are branch-like structures that pick up signals from neighbouring cells.
+                <br><strong>II. Soma (Cell body)</strong>
+                <br>The neuron's control center, that processes the signals and contains the nucleus.
+                <br><strong>III. Axon</strong>
+                <br>A long, cable-like extension that carries the action potential away from the cell toward other cells.
             </p>
 
             <p>
-                1. Electrical Signaling (Within the Neuron)
-                Information travels from one end of a single neuron to the other via an electrical impulse known as an action potential.
-                The Resting State: At rest, the inside of a neuron carries a negative electrical charge compared to the outside. This state is maintained by an uneven balance of charged particles (ions) like sodium and potassium.
-                The Spark: When a neuron receives a strong enough signal, gates in its cell membrane open. Positively charged sodium ions rush into the cell, rapidly flipping the charge inside from negative to positive.
-                The Wave: This charge reversal creates an electrical wave that zips down the length of the cell’s long "tail" (the axon).
-                2. Chemical Signaling (Between Neurons)
-                Neurons don't physically touch one another. They are separated by a microscopic gap called a synapse (or synaptic cleft). The electrical wave cannot jump this gap, so it must be converted into a chemical message.
-                Release: When the electrical action potential reaches the very end of the axon, it triggers the release of specialized chemicals called neurotransmitters (like dopamine, serotonin, or glutamate).
-                Crossing the Gap: These chemical messengers are released from storage sacs and float across the microscopic gap.Reception: Once across, they bind to specific "mailbox" proteins called receptors on the receiving neuron.
-                The Result: Depending on the type of neurotransmitter that binds, this action can either excite the next neuron (encouraging it to pass the message along) or inhibit it (telling it to stay quiet).
+                <strong>1. Electrical Signaling (Within the Neuron)</strong>
+                <br>Information travels from one end of a single neuron to the other via an electrical impulse known as an action potential.
+                <br><strong>The Resting State:</strong> At rest, the inside of a neuron carries a negative electrical charge compared to the outside. This state is maintained by an uneven balance of charged particles (ions).
+                <br><strong>The Spark:</strong> When a neuron receives a strong enough signal, gates in its cell membrane open. Positively charged sodium ions rush into the cell, rapidly flipping the charge inside from negative to positive.
+                <br><strong>The Wave:</strong> This charge reversal creates an electrical wave that zips down the length of the cell's long "tail" (the axon).
             </p>
-            <h2>DIAGRAM</h2>
-            <P>
-                <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Neuron Diagram</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
 
-        .container {
-            display: flex;
-            flex-direction: row;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            max-width: 900px;
-            width: 100%;
-            overflow: hidden;
-        }
+            <p>
+                <strong>2. Chemical Signaling (Between Neurons)</strong>
+                <br>Neurons don't physically touch one another. They are separated by a microscopic gap called a synapse (or synaptic cleft). The electrical wave cannot jump this gap, so it must be converted into a chemical signal.
+                <br><strong>Release:</strong> When the electrical action potential reaches the very end of the axon, it triggers the release of specialized chemicals called neurotransmitters (like dopamine, serotonin, or acetylcholine).
+                <br><strong>Crossing the Gap:</strong> These chemical messengers are released from storage sacs and float across the microscopic gap.
+                <br><strong>Reception:</strong> Once across, they bind to specific "mailbox" proteins called receptors on the next neuron.
+                <br><strong>The Result:</strong> Depending on the type of neurotransmitter that binds, this action can either excite the next neuron (encouraging it to pass the message along) or inhibit it (telling it to stay quiet).
+            </p>
 
-        .diagram-area {
-            flex: 1.5;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fafafa;
-        }
+            <h2>INTERACTIVE NEURON DIAGRAM</h2>
+            
+            <!-- IMPROVED DIAGRAM SECTION -->
+            <div class="neuron-container">
+                <!-- SVG Diagram -->
+                <div class="diagram-area">
+                    <svg class="diagram-svg" viewBox="0 0 700 350" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background -->
+                        <defs>
+                            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f9f9f9;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#f0f0f0;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
 
-        .info-panel {
-            flex: 1;
-            padding: 30px;
-            border-left: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+                        <!-- DENDRITES (Left side) -->
+                        <g class="neuron-part" data-part="dendrites">
+                            <!-- Main dendrite branches -->
+                            <path class="dendrite" d="M 120 160 Q 80 140, 40 120" />
+                            <path class="dendrite" d="M 120 160 Q 70 130, 30 90" />
+                            <path class="dendrite" d="M 120 160 Q 85 135, 50 100" />
+                            <path class="dendrite" d="M 110 175 Q 75 195, 45 210" />
+                            <path class="dendrite" d="M 115 185 Q 80 210, 40 235" />
+                            <path class="dendrite" d="M 125 190 Q 90 220, 55 245" />
+                            
+                            <!-- Sub-branches for detail -->
+                            <path class="dendrite" d="M 40 120 L 20 105" style="stroke-width: 2;" />
+                            <path class="dendrite" d="M 40 120 L 25 135" style="stroke-width: 2;" />
+                            <path class="dendrite" d="M 45 210 L 30 225" style="stroke-width: 2;" />
+                            
+                            <text class="part-label" x="70" y="165">Dendrites</text>
+                        </g>
 
-        svg {
-            width: 100%;
-            height: auto;
-            max-height: 400px;
-        }
+                        <!-- SOMA (Cell Body) -->
+                        <g class="neuron-part" data-part="soma">
+                            <!-- Main soma ellipse -->
+                            <ellipse class="soma" cx="140" cy="175" rx="45" ry="50" />
+                            
+                            <!-- Nucleus -->
+                            <circle class="nucleus" cx="140" cy="175" r="18" />
+                            
+                            <!-- Nucleus detail -->
+                            <circle class="nucleus" cx="135" cy="170" r="4" opacity="0.5" />
+                            
+                            <text class="part-label" x="140" y="180">Soma</text>
+                        </g>
 
-        /* Interactive Styling */
-        .neuron-part {
-            cursor: pointer;
-            transition: transform 0.2s ease, filter 0.2s ease;
-        }
+                        <!-- AXON (Main cable) -->
+                        <g class="neuron-part" data-part="axon">
+                            <path class="axon" d="M 185 175 L 500 175" />
+                            <text class="part-label" x="340" y="165">Axon</text>
+                        </g>
 
-        .neuron-part:hover {
-            filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.3));
-            transform: scale(1.02);
-            transform-origin: center;
-        }
+                        <!-- MYELIN SHEATH -->
+                        <g class="neuron-part" data-part="myelin">
+                            <!-- Node 1 -->
+                            <rect class="myelin" x="210" y="160" width="45" height="30" rx="5" />
+                            <!-- Node 2 -->
+                            <rect class="myelin" x="290" y="160" width="45" height="30" rx="5" />
+                            <!-- Node 3 -->
+                            <rect class="myelin" x="370" y="160" width="45" height="30" rx="5" />
+                            <!-- Node 4 -->
+                            <rect class="myelin" x="450" y="160" width="45" height="30" rx="5" />
+                            
+                            <text class="part-label" x="330" y="215">Myelin Sheath</text>
+                        </g>
 
-        /* Specific part colors */
-        .soma { fill: #ff7675; }
-        .nucleus { fill: #d63031; }
-        .dendrite { stroke: #74b9ff; stroke-width: 4; stroke-linecap: round; fill: none; }
-        .axon { stroke: #ffeaa7; stroke-width: 6; fill: none; }
-        .myelin { fill: #ffeaa7; stroke: #fdcb6e; stroke-width: 2; }
-        .terminal { stroke: #a29bfe; stroke-width: 3; stroke-linecap: round; fill: none; }
+                        <!-- AXON TERMINALS (Right side) -->
+                        <g class="neuron-part" data-part="terminals">
+                            <!-- Terminal branches -->
+                            <path class="terminal" d="M 500 175 L 540 140 L 570 120" />
+                            <path class="terminal" d="M 540 140 L 560 155" />
+                            <path class="terminal" d="M 500 175 L 545 175 L 580 190" />
+                            <path class="terminal" d="M 500 175 L 540 210 L 570 235" />
+                            <path class="terminal" d="M 540 210 L 560 195" />
+                            
+                            <!-- Terminal buttons (synaptic vesicles) -->
+                            <circle class="terminal-dot" cx="570" cy="120" r="4" />
+                            <circle class="terminal-dot" cx="560" cy="155" r="4" />
+                            <circle class="terminal-dot" cx="580" cy="190" r="4" />
+                            <circle class="terminal-dot" cx="570" cy="235" r="4" />
+                            <circle class="terminal-dot" cx="560" cy="195" r="4" />
+                            
+                            <text class="part-label" x="580" y="85">Terminals</text>
+                        </g>
 
-        h2 {
-            margin-top: 0;
-            color: #2d3436;
-        }
+                        <!-- Synaptic Gap visualization (optional) -->
+                        <g opacity="0.3">
+                            <text x="610" y="180" font-size="11" fill="#999" text-anchor="start">Synaptic Gap</text>
+                            <path d="M 600 170 L 600 190" stroke="#999" stroke-width="1" stroke-dasharray="3,3" />
+                        </g>
+                    </svg>
+                </div>
 
-        #part-title {
-            color: #0984e3;
-            margin-bottom: 10px;
-        }
+                <!-- Info Panel -->
+                <div class="info-panel">
+                    <h2>Neuron Structure</h2>
+                    <p id="part-title">Neuron Anatomy</p>
+                    <p id="part-description">Hover over or tap any part of the neuron diagram to learn about its structure and biological function.</p>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #3498db;"></div>
+                            <span>Dendrites</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #e74c3c;"></div>
+                            <span>Soma</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f39c12;"></div>
+                            <span>Axon</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f1c40f;"></div>
+                            <span>Myelin</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #9b59b6;"></div>
+                            <span>Terminals</span>
+                        </div>
+                    </div>
+                    
+                    <p class="hint">💡 Click or hover over diagram parts to explore.</p>
+                </div>
+            </div>
 
-        #part-description {
-            line-height: 1.6;
-            color: #636e72;
-        }
-
-        .hint {
-            font-size: 0.9rem;
-            color: #b2bec3;
-            margin-top: 20px;
-            font-style: italic;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            .info-panel {
-                border-left: none;
-                border-top: 1px solid #eee;
-            }
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <!-- SVG Diagram -->
-    <div class="diagram-area">
-        <svg viewBox="0 0 600 300" xmlns="http://w3.org">
-            <!-- Background Grid/Accents (Optional) -->
-            <g opacity="0.1">
-                <line x1="0" y1="150" x2="600" y2="150" stroke="#000" stroke-dasharray="5,5"/>
-            </g>
-
-            <!-- AXON (Underneath myelin blocks) -->
-            <path class="neuron-part axon" data-part="axon" d="M 150 150 L 450 150" />
-
-            <!-- DENDRITES -->
-            <g class="neuron-part" data-part="dendrites">
-                <path class="dendrite" d="M 100 120 L 60 90 L 40 100" />
-                <path class="dendrite" d="M 60 90 L 30 70" />
-                <path class="dendrite" d="M 90 100 L 50 60" />
-                <path class="dendrite" d="M 100 180 L 60 210 L 40 200" />
-                <path class="dendrite" d="M 60 210 L 30 230" />
-                <path class="dendrite" d="M 120 190 L 80 240" />
-                <path class="dendrite" d="M 75 140 L 30 140" />
-            </g>
-
-            <!-- SOMA (Cell Body) -->
-            <g class="neuron-part" data-part="soma">
-                <path class="soma" d="M 120 100 C 150 90, 160 120, 150 150 C 160 180, 140 210, 120 200 C 90 210, 80 170, 90 150 C 70 130, 90 90, 120 100 Z" />
-                <!-- Nucleus -->
-                <circle class="nucleus" cx="120" cy="150" r="15" />
-            </g>
-
-            <!-- MYELIN SHEATH -->
-            <g class="neuron-part" data-part="myelin">
-                <!-- Node 1 -->
-                <rect class="myelin" x="180" y="135" width="50" height="30" rx="5" />
-                <!-- Node 2 -->
-                <rect class="myelin" x="250" y="135" width="50" height="30" rx="5" />
-                <!-- Node 3 -->
-                <rect class="myelin" x="320" y="135" width="50" height="30" rx="5" />
-                <!-- Node 4 -->
-                <rect class="myelin" x="390" y="135" width="50" height="30" rx="5" />
-            </g>
-
-            <!-- AXON TERMINALS -->
-            <g class="neuron-part" data-part="terminals">
-                <path class="terminal" d="M 450 150 L 490 120 L 520 110" />
-                <path class="terminal" d="M 490 120 L 510 140" />
-                <path class="terminal" d="M 450 150 L 500 150 L 530 160" />
-                <path class="terminal" d="M 450 150 L 480 190 L 510 210" />
-                <path class="terminal" d="M 480 190 L 500 180" />
-                <!-- Terminal Buttons -->
-                <circle fill="#a29bfe" cx="520" cy="110" r="4" />
-                <circle fill="#a29bfe" cx="510" cy="140" r="4" />
-                <circle fill="#a29bfe" cx="530" cy="160" r="4" />
-                <circle fill="#a29bfe" cx="510" cy="210" r="4" />
-                <circle fill="#a29bfe" cx="500" cy="180" r="4" />
-            </g>
-        </svg>
-    </div>
-
-    <!-- Info Panel -->
-    <div class="info-panel">
-        <h2 id="part-title">Neuron Anatomy</h2>
-        <p id="part-description">Hover over or tap any part of the neuron diagram to learn about its structure and biological function.</p>
-        <p class="hint">Interact with the diagram to explore.</p>
-    </div>
-</div>
-
-<script>
-    const data = {
-        soma: {
-            title: "Soma (Cell Body)",
-            desc: "The soma is the core structural engine of the neuron. It contains the nucleus and major organelles, maintaining the cell's life processes and integrating incoming electrical signals from the dendrites."
-        },
-        dendrites: {
-            title: "Dendrites",
-            desc: "These branch-like structures extend out from the cell body. They act as the primary antennas of the neuron, receiving chemical messages (neurotransmitters) from other neurons and converting them into electrical impulses."
-        },
-        axon: {
-            title: "Axon",
-            desc: "The axon is a long, slender cable-like projection that carries electrical impulses (action potentials) away from the cell body and toward other neurons, muscles, or glands."
-        },
-        myelin: {
-            title: "Myelin Sheath & Nodes",
-            desc: "Myelin is a fatty insulating layer formed around the axon. It allows electrical signals to transmit quickly and efficiently along the nerve cells. The gaps between blocks are called Nodes of Ranvier, which help regenerate the signal."
-        },
-        terminals: {
-            title: "Axon Terminals",
-            desc: "Located at the very end of the axon, these specialized structures convert electrical signals back into chemical messages. They release neurotransmitters across the synaptic gap to communicate with the next target cell."
-        }
-    };
-
-    const titleEl = document.getElementById('part-title');
-    const descEl = document.getElementById('part-description');
-    const interactiveParts = document.querySelectorAll('.neuron-part');
-
-    interactiveParts.forEach(part => {
-        part.addEventListener('mouseenter', () => {
-            const partName = part.getAttribute('data-part');
-            if(data[partName]) {
-                titleEl.textContent = data[partName].title;
-                descEl.textContent = data[partName].desc;
-            }
-        });
-
-        part.addEventListener('click', () => {
-            const partName = part.getAttribute('data-part');
-            if(data[partName]) {
-                titleEl.textContent = data[partName].title;
-                descEl.textContent = data[partName].desc;
-            }
-        });
-    });
-</script>
-            </P>
         </article>
     </main>
 
     <footer class="footer">
         <p>The smallest units can do very large things. Very rude of biology, honestly.</p>
     </footer>
+
+    <script>
+        const neuronData = {
+            soma: {
+                title: "Soma (Cell Body)",
+                desc: "The soma is the core of the neuron, containing the nucleus and most organelles. It integrates incoming signals from dendrites and decides whether to fire an action potential. Think of it as the neuron's command center."
+            },
+            dendrites: {
+                title: "Dendrites",
+                desc: "Branch-like structures that receive chemical messages (neurotransmitters) from neighboring neurons. They conduct these signals toward the soma. A single neuron can have thousands of dendritic connections, allowing it to integrate complex information."
+            },
+            axon: {
+                title: "Axon",
+                desc: "A long, thin projection that conducts electrical impulses (action potentials) away from the soma toward axon terminals. Some axons can be over 3 feet long in humans! The axon is the neuron's communication cable."
+            },
+            myelin: {
+                title: "Myelin Sheath",
+                desc: "A fatty insulating layer wrapped around the axon that speeds up electrical signal transmission. Gaps in the myelin (called Nodes of Ranvier) allow the signal to 'jump' along the axon, making transmission much faster—up to 100 times faster than unmyelinated axons."
+            },
+            terminals: {
+                title: "Axon Terminals",
+                desc: "The branched endings of the axon where it meets other neurons. When an action potential arrives here, it triggers the release of neurotransmitters into the synaptic gap. These chemical messengers then bind to receptors on the next neuron, continuing the signal."
+            }
+        };
+
+        const titleEl = document.getElementById('part-title');
+        const descEl = document.getElementById('part-description');
+        const interactiveParts = document.querySelectorAll('.neuron-part');
+
+        function activatePart(partName) {
+            interactiveParts.forEach(part => part.classList.remove('active'));
+            const hoveredPart = document.querySelector(`[data-part="${partName}"]`);
+            if (hoveredPart) {
+                hoveredPart.classList.add('active');
+            }
+            if (neuronData[partName]) {
+                titleEl.textContent = neuronData[partName].title;
+                descEl.textContent = neuronData[partName].desc;
+            }
+        }
+
+        interactiveParts.forEach(part => {
+            part.addEventListener('mouseenter', () => {
+                activatePart(part.getAttribute('data-part'));
+            });
+
+            part.addEventListener('click', () => {
+                activatePart(part.getAttribute('data-part'));
+            });
+        });
+
+        // Set initial state
+        activatePart('soma');
+    </script>
 
 </body>
 </html>
