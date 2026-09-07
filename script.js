@@ -1,6 +1,5 @@
 const THEME_KEY = "theme";
 const root = document.documentElement;
-const themeButton = document.getElementById("theme-toggle");
 
 function applyTheme(theme) {
     if (theme === "dark") {
@@ -23,12 +22,10 @@ function toggleTheme() {
     localStorage.setItem(THEME_KEY, newTheme);
 }
 
-themeButton.addEventListener("click", toggleTheme);
-
-// Initial theme
+// Apply saved theme when the page loads
 const savedTheme = localStorage.getItem(THEME_KEY);
 
-if (savedTheme) {
+if (savedTheme === "dark" || savedTheme === "light") {
     applyTheme(savedTheme);
 } else {
     const prefersDark = window.matchMedia(
