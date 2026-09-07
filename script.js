@@ -1,28 +1,39 @@
 const THEME_KEY = "theme";
 const root = document.documentElement;
+const themeButton = document.getElementById("theme-toggle");
 
 function applyTheme(theme) {
-    root.toggleAttribute("data-theme", theme === "dark");
-}
-
-function getPreferredTheme() {
-    const savedTheme = localStorage.getItem(THEME_KEY);
-
-    if (savedTheme === "dark" || savedTheme === "light") {
-        return savedTheme;
+    if (theme === "dark") {
+        root.setAttribute("data-theme", "dark");
+    } else {
+        root.removeAttribute("data-theme");
     }
-
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
 }
 
 function toggleTheme() {
-    const currentTheme = getPreferredTheme();
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    const currentTheme =
+        root.getAttribute("data-theme") === "dark"
+            ? "dark"
+            : "light";
+
+    const newTheme =
+        currentTheme === "dark" ? "light" : "dark";
 
     applyTheme(newTheme);
     localStorage.setItem(THEME_KEY, newTheme);
 }
 
-applyTheme(getPreferredTheme());
+themeButton.addEventListener("click", toggleTheme);
+
+// Initial theme
+const savedTheme = localStorage.getItem(THEME_KEY);
+
+if (savedTheme) {
+    applyTheme(savedTheme);
+} else {
+    const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+    ).matches;
+
+    applyTheme(prefersDark ? "dark" : "light");
+}
